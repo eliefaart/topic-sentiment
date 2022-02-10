@@ -1,3 +1,4 @@
+use crate::Result;
 use reqwest::{Method, StatusCode};
 use serde_derive::Deserialize;
 
@@ -8,8 +9,8 @@ pub struct TwitterClient {
 
 #[derive(Debug, Deserialize)]
 #[serde(rename_all = "camelCase")]
-pub struct SearchTweetsResponse {
-    pub data: Vec<Tweet>,
+struct SearchTweetsResponse {
+    data: Vec<Tweet>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -27,8 +28,9 @@ impl TwitterClient {
         }
     }
 
-    pub async fn get_tweets_for_topic(&self, topic: &str) -> crate::Result<Vec<Tweet>> {
-        let url = format!("https://api.twitter.com/2/tweets/search/recent?query={topic}");
+    pub async fn get_tweets_for_topic(&self, topic: &str) -> Result<Vec<Tweet>> {
+        let url =
+            format!("https://api.twitter.com/2/tweets/search/recent?query={topic}&max_results=100");
 
         let request = self
             .http_client

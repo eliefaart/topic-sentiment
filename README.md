@@ -1,2 +1,2 @@
 # topic-sentiment
-```topic-sentiment.exe --token <token> <topic>```
+```topic-sentiment.exe --token <token> <topic> [-v]```

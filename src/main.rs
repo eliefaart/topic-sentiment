@@ -14,38 +14,31 @@ struct Args {
 
     #[clap()]
     topic: String,
+
+    #[clap(short)]
+    verbose: bool,
 }
 
 #[tokio::main]
 async fn main() -> Result<()> {
     let args = Args::parse();
     let analyzer = vader_sentiment::SentimentIntensityAnalyzer::new();
-
     let twitter_client = TwitterClient::new(args.token);
+
     let tweets = twitter_client.get_tweets_for_topic(&args.topic).await?;
     let n_tweets = tweets.len() as f64;
 
-    let mut score_neutral = 0f64;
-    let mut score_positive = 0f64;
-    let mut score_negative = 0f64;
-
+    let mut compound_sum = 0f64;
     for tweet in tweets {
         let scores = analyzer.polarity_scores(&tweet.text);
-        score_neutral += scores.get("neu").unwrap_or(&0f64);
-        score_positive += scores.get("pos").unwrap_or(&0f64);
-        score_negative += scores.get("neg").unwrap_or(&0f64);
+        compound_sum += scores.get("compound").unwrap_or(&0f64);
 
-        println!("{}\n---", &tweet.text.replace("\n", " "));
+        if args.verbose {
+            println!("{}\n{:?}\n---\n", &tweet.text.replace("\n", " "), scores);
+        }
     }
 
-    score_neutral = score_neutral / n_tweets;
-    score_positive = score_positive / n_tweets;
-    score_negative = score_negative / n_tweets;
-
-    println!("\nTopic: {}", &args.topic);
-    println!("\tneutral: {score_neutral}");
-    println!("\tpositive: {score_positive}");
-    println!("\tnegative: {score_negative}");
-
+    let score = compound_sum / n_tweets;
+    println!("{score}");
     Ok(())
 }
