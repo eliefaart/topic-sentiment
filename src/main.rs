@@ -15,7 +15,7 @@ struct Args {
     #[clap()]
     topic: String,
 
-    #[clap(short)]
+    #[clap(short, long)]
     verbose: bool,
 }
 
