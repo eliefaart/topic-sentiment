@@ -2,7 +2,13 @@ name: CI
 
 on:
   push:
+    paths:
+      - '.github/workflows/ci.yml'
+      - 'src/**'
   pull_request:
+    paths:
+      - '.github/workflows/ci.yml'
+      - 'src/**'
 
 env:
   CARGO_TERM_COLOR: always
